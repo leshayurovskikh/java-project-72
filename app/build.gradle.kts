@@ -28,7 +28,7 @@ dependencies {
     implementation("io.javalin:javalin-testtools:6.3.0")
     implementation("org.slf4j:slf4j-simple:2.0.16")
     // https://mvnrepository.com/artifact/gg.jte/jte
-    implementation("gg.jte:jte:3.1.12")
+    implementation("gg.jte:jte:3.1.13")
     // https://mvnrepository.com/artifact/com.zaxxer/HikariCP
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("com.h2database:h2:2.2.220")
@@ -36,6 +36,8 @@ dependencies {
     implementation("com.konghq:unirest-java:3.14.5")
     implementation("com.konghq:unirest-objectmapper-jackson:4.2.9")
     implementation("org.jsoup:jsoup:1.18.1")
+
+
 }
 
 tasks.test {
