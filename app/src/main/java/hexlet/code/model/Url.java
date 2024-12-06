@@ -11,9 +11,9 @@ public class Url {
     private String name;
     private Timestamp createdAt;
 
-    public Url(long id, String name, Timestamp createdAt) {
+    public Url(long id, String address, Timestamp createdAt) {
         this.id = id;
-        this.name = name;
+        this.name = address;
         this.createdAt = createdAt;
     }
 }

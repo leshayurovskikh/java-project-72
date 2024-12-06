@@ -20,17 +20,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.stream.Collectors;
 
-import static jakarta.servlet.SessionTrackingMode.URL;
-
 @Slf4j
 public class App {
     public static Javalin getApp() throws SQLException, IOException {
         var hikariConfig = new HikariConfig();
         hikariConfig.setJdbcUrl("jdbc:h2:mem:project");
         var dataSource = new HikariDataSource(hikariConfig);
-        var sql = readResourceFile("schema.sql");
-        log.info(sql);
 
+        // Инициализация базы данных с помощью schema.sql
+        initializeDatabase(dataSource);
 
         var app = Javalin.create(config -> {
             config.bundledPlugins.enableDevLogging();
@@ -41,7 +39,7 @@ public class App {
         app.post("/urls", ctx -> {
             String address = ctx.formParam("address");
             if (address != null && !address.isEmpty()) {
-                Database.addUrl(address); // Добавление адреса в БД
+                addUrl(dataSource, address); // Обновлен метод, который использует dataSource
                 ctx.result("Адрес добавлен: " + address);
             } else {
                 ctx.status(400).result("Ошибка: адрес не может быть пустым.");
@@ -52,7 +50,7 @@ public class App {
 
     public static void main(String[] args) throws IOException, SQLException {
         Javalin app = getApp();
-        app.start(7000);
+        app.start(8000);
     }
 
     private static String readResourceFile(String fileName) throws IOException {
@@ -65,16 +63,22 @@ public class App {
     private static TemplateEngine createTemplateEngine() {
         ClassLoader classLoader = App.class.getClassLoader();
         ResourceCodeResolver codeResolver = new ResourceCodeResolver("templates", classLoader);
-        TemplateEngine templateEngine = TemplateEngine.create(codeResolver, ContentType.Html);
-        return templateEngine;
+        return TemplateEngine.create(codeResolver, ContentType.Html);
     }
-    public static void addUrl(String address) {
+    public static void addUrl(HikariDataSource dataSource, String address) {
         try (Connection conn = DriverManager.getConnection("jdbc:h2:mem:project");
              Statement stmt = conn.createStatement()) {
             String sql = "INSERT INTO urls (address) VALUES ('" + address + "');";
             stmt.executeUpdate(sql);
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+    private static void initializeDatabase(HikariDataSource dataSource) throws SQLException, IOException {
+        try (Connection conn = dataSource.getConnection();
+             Statement stmt = conn.createStatement()) {
+            var sql = readResourceFile("schema.sql");
+            stmt.execute(sql);
         }
     }
 }

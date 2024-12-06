@@ -10,7 +10,7 @@
     <main>
         <h1 class="text-body-emphasis">Привет, Хекслет!</h1>
         <h1>Введите адрес:</h1>
-        <form action="/urls" method="POST">
+        <form action="/urls" method="get">
             <label for="address">Адрес:</label>
             <input type="text" id="address" name="address" required>
             <button type="submit">Отправить</button>
